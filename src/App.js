@@ -23,19 +23,30 @@ const useItems = () => {
   return items
 }
 
-const App = () => {
-  const items = useItems()
-  const location = useLocation()
-  const isHome = location.pathname === '/'
-
+const useUser = () => {
   const [user, setUser] = useStorageState(localStorage, 'firebase-user', null)
 
   useEffect(() => {
-    auth.onAuthStateChanged(foundUser => {
-      if (foundUser) setUser(foundUser)
-      else setUser(null)
+    auth.onAuthStateChanged(connectedUser => {
+      if (connectedUser) {
+        db.collection('users')
+          .where('email', '==', connectedUser.email)
+          .get()
+          .then(result => {
+            result.forEach(doc => setUser(doc.data()))
+          })
+      } else setUser(null)
     })
   }, [setUser])
+
+  return user
+}
+
+const App = () => {
+  const items = useItems()
+  const user = useUser()
+  const location = useLocation()
+  const isHome = location.pathname === '/'
 
   return (
     <Fragment>

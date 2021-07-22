@@ -25,8 +25,8 @@ const loginWithGoogle = async history => {
     const { email, uid } = result.user
 
     await db.collection('users').doc(uid).set({
-      firstname: additionalUserInfo.profile.family_name,
-      lastname: additionalUserInfo.profile.given_name,
+      lastname: additionalUserInfo.profile.family_name,
+      firstname: additionalUserInfo.profile.given_name,
       id: uid,
       email
     })

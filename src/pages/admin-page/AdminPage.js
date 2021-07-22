@@ -5,11 +5,16 @@ import TableItems from '../../components/table-items/TableItems'
 import { db } from '../../firebase'
 import { v4 as uuidv4 } from 'uuid'
 import './admin-page.css'
+import { Redirect } from 'react-router-dom'
 
-const AdminPage = ({ list }) => {
+const AdminPage = ({ list, user }) => {
   const [showForm, setShowForm] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [id, setId] = useState(null)
+
+  if (!user || !user.admin) {
+    return <Redirect to={{ path: '/' }} />
+  }
 
   const addItem = async item => {
     try {

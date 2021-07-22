@@ -13,8 +13,9 @@ const FormLogin = () => {
       password: ''
     },
     validate,
-    onSubmit: values => {
+    onSubmit: async values => {
       login(values)
+      history.push('/')
     }
   })
 

@@ -13,16 +13,20 @@ const Header = ({ user }) => {
         <Navbar.Toggle aria-controls='basic-navbar-nav' />
         <Navbar.Collapse id='basic-navbar-nav'>
           <Nav className='ms-auto'>
+            {user && user.admin && (
+              <Nav.Link as={Link} to='/admin' className='me-5'>
+                <i className='fas fa-user me-2'></i> Admin
+              </Nav.Link>
+            )}
             {!user ? (
               <Nav.Link as={Link} to='/login'>
                 Se connecter
               </Nav.Link>
             ) : (
               <Fragment>
-                <Nav.Link as={Link} to='/admin' className='me-5'>
-                  <i className='fas fa-user me-2'></i> Admin
+                <Nav.Link>
+                  Bonjour {user.firstname + ' ' + user.lastname}
                 </Nav.Link>
-                <Nav.Link>Bonjour {user.displayName}</Nav.Link>
                 <Nav.Link onClick={() => auth.signOut()}>
                   Se déconnecter
                 </Nav.Link>
