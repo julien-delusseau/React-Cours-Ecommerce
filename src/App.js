@@ -4,19 +4,31 @@ import Header from './components/header/Header'
 import Banner from './components/banner/Banner'
 import { Container } from 'react-bootstrap'
 import Home from './pages/home/Home'
-import data from './data/data.json'
 import { Switch, Route, useLocation } from 'react-router-dom'
 import SinglePage from './pages/single-page/SinglePage'
-import { auth } from './firebase'
+import { auth, db } from './firebase'
 import LoginPage from './pages/login-page/LoginPage'
 import AdminPage from './pages/admin-page/AdminPage'
 
+const useItems = () => {
+  const [items, setItems] = useStorageState(localStorage, 'firebase-items', [])
+
+  useEffect(() => {
+    db.collection('items').onSnapshot(snap => {
+      const allItems = snap.docs.map(doc => ({ ...doc.data(), id: doc.id }))
+      setItems(allItems)
+    })
+  }, [setItems])
+
+  return items
+}
+
 const App = () => {
+  const items = useItems()
   const location = useLocation()
   const isHome = location.pathname === '/'
 
   const [user, setUser] = useStorageState(localStorage, 'firebase-user', null)
-  const [list, setList] = useStorageState(localStorage, 'firebase-list', data)
 
   useEffect(() => {
     auth.onAuthStateChanged(foundUser => {
@@ -25,10 +37,6 @@ const App = () => {
     })
   }, [setUser])
 
-  // useEffect(() => {
-  //   getItems().then(result => setList(result))
-  // }, [setList])
-
   return (
     <Fragment>
       <Header user={user} />
@@ -36,16 +44,16 @@ const App = () => {
       <Container style={{ marginTop: isHome ? '200px' : '100px' }}>
         <Switch>
           <Route exact path='/'>
-            <Home list={list} />
+            <Home list={items} />
           </Route>
           <Route path='/item/:id'>
-            <SinglePage list={list} />
+            <SinglePage list={items} />
           </Route>
           <Route path='/login'>
             <LoginPage />
           </Route>
           <Route path='/admin'>
-            <AdminPage list={list} user={user} setList={setList} />
+            <AdminPage list={items} user={user} />
           </Route>
         </Switch>
       </Container>

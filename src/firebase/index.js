@@ -16,22 +16,35 @@ const db = firebase.firestore()
 
 // AUTHENTIFICATION
 
-const loginWithGoogle = async () => {
+const loginWithGoogle = async history => {
   const provider = new firebase.auth.GoogleAuthProvider()
 
   try {
     const result = await auth.signInWithPopup(provider)
-    console.log(result)
+    const { additionalUserInfo } = result
+    const { email, uid } = result.user
+
+    await db.collection('users').doc(uid).set({
+      firstname: additionalUserInfo.profile.family_name,
+      lastname: additionalUserInfo.profile.given_name,
+      id: uid,
+      email
+    })
+
+    history.push('/')
   } catch (error) {
-    console.error(error)
+    console.error(error.message)
   }
 }
 
 const register = async user => {
+  const { firstname, lastname, email, admin, password } = user
   try {
-    await auth.createUserWithEmailAndPassword(user.email, user.password)
+    await auth.createUserWithEmailAndPassword(email, password)
+
+    await db.collection('users').add({ firstname, lastname, email, admin })
   } catch (error) {
-    console.error(error)
+    console.error(error.message)
   }
 }
 
@@ -43,17 +56,4 @@ const login = async user => {
   }
 }
 
-// DATABASE
-
-const getItems = async () => {
-  const list = []
-  try {
-    const result = await db.collection('items').get()
-    result.forEach(doc => list.push(doc.data()))
-    return list
-  } catch (error) {
-    console.error(error.message)
-  }
-}
-
-export { register, loginWithGoogle, login, auth, getItems }
+export { register, loginWithGoogle, login, auth, db }

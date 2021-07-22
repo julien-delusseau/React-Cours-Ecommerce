@@ -2,8 +2,11 @@ import { Button, Form } from 'react-bootstrap'
 import { useFormik } from 'formik'
 import validate from './validation'
 import { login, loginWithGoogle } from '../../firebase'
+import { useHistory } from 'react-router-dom'
 
 const FormLogin = () => {
+  const history = useHistory()
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -51,7 +54,11 @@ const FormLogin = () => {
       <Button className='me-3' type='submit'>
         Se connecter
       </Button>
-      <Button onClick={loginWithGoogle} variant='info' type='button'>
+      <Button
+        onClick={() => loginWithGoogle(history)}
+        variant='info'
+        type='button'
+      >
         <i className='fab fa-google'></i> Se connecter avec Google
       </Button>
     </Form>
