@@ -20,7 +20,7 @@ const Header = ({ user }) => {
             ) : (
               <Fragment>
                 <Nav.Link as={Link} to='/admin' className='me-5'>
-                  <i className='fas fa-user'></i> Admin
+                  <i className='fas fa-user me-2'></i> Admin
                 </Nav.Link>
                 <Nav.Link>Bonjour {user.displayName}</Nav.Link>
                 <Nav.Link onClick={() => auth.signOut()}>
