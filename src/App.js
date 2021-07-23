@@ -9,6 +9,7 @@ import SinglePage from './pages/single-page/SinglePage'
 import { auth, db } from './firebase'
 import LoginPage from './pages/login-page/LoginPage'
 import AdminPage from './pages/admin-page/AdminPage'
+import BasketPage from './pages/basket-page/BasketPage'
 
 const useItems = () => {
   const [items, setItems] = useStorageState(localStorage, 'firebase-items', [])
@@ -43,14 +44,43 @@ const useUser = () => {
 }
 
 const App = () => {
+  const [basket, setBasket] = useStorageState(localStorage, 'basket', [])
+
   const items = useItems()
   const user = useUser()
   const location = useLocation()
   const isHome = location.pathname === '/'
 
+  const deleteItem = id => {
+    setBasket(basket.filter(item => item.id !== id))
+  }
+
+  const addItem = item => {
+    const exist = basket.find(article => article.id === item.id)
+    if (exist) {
+      setBasket(
+        basket.map(article =>
+          article.id === exist.id ? { ...exist, qty: exist.qty + 1 } : article
+        )
+      )
+    } else setBasket([...basket, { ...item, qty: 1 }])
+  }
+
+  const subItem = item => {
+    if (item.qty === 1) {
+      deleteItem(item.id)
+    } else {
+      setBasket(
+        basket.map(article =>
+          article.id === item.id ? { ...item, qty: item.qty - 1 } : article
+        )
+      )
+    }
+  }
+
   return (
     <Fragment>
-      <Header user={user} />
+      <Header user={user} basket={basket} />
       {isHome && <Banner />}
       <Container style={{ marginTop: isHome ? '200px' : '100px' }}>
         <Switch>
@@ -58,13 +88,21 @@ const App = () => {
             <Home list={items} />
           </Route>
           <Route path='/item/:id'>
-            <SinglePage list={items} />
+            <SinglePage list={items} addItem={addItem} />
           </Route>
           <Route path='/login'>
             <LoginPage />
           </Route>
           <Route path='/admin'>
             <AdminPage list={items} user={user} />
+          </Route>
+          <Route path='/basket'>
+            <BasketPage
+              basket={basket}
+              deleteItem={deleteItem}
+              subItem={subItem}
+              addItem={addItem}
+            />
           </Route>
         </Switch>
       </Container>

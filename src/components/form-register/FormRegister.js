@@ -104,17 +104,6 @@ const FormRegister = () => {
         </Form.Text>
       </Form.Group>
 
-      <Form.Group className='mb-3'>
-        <Form.Check
-          type='checkbox'
-          label='Admin ?'
-          name='admin'
-          onChange={handleChange}
-          onBlur={handleBlur}
-          value={values.admin}
-        />
-      </Form.Group>
-
       <Button className='me-3' type='submit'>
         S'enregistrer
       </Button>

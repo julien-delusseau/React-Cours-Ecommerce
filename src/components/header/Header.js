@@ -1,9 +1,11 @@
 import { Fragment } from 'react'
-import { Container, Navbar, Nav } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Container, Navbar, Nav, Badge } from 'react-bootstrap'
+import { Link, useHistory } from 'react-router-dom'
 import { auth } from '../../firebase'
 
-const Header = ({ user }) => {
+const Header = ({ user, basket }) => {
+  const history = useHistory()
+
   return (
     <Navbar bg='primary' variant='dark' expand='lg'>
       <Container>
@@ -24,10 +26,23 @@ const Header = ({ user }) => {
               </Nav.Link>
             ) : (
               <Fragment>
-                <Nav.Link>
+                <Nav.Link as={Link} to='/'>
                   Bonjour {user.firstname + ' ' + user.lastname}
                 </Nav.Link>
-                <Nav.Link onClick={() => auth.signOut()}>
+                <Nav.Link as={Link} to='/basket'>
+                  Mon panier{' '}
+                  {
+                    <Badge pill style={{ background: '#dc3545' }}>
+                      {basket.length}
+                    </Badge>
+                  }
+                </Nav.Link>
+                <Nav.Link
+                  onClick={() => {
+                    auth.signOut()
+                    history.push('/')
+                  }}
+                >
                   Se déconnecter
                 </Nav.Link>
               </Fragment>
